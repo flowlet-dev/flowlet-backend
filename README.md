@@ -75,3 +75,9 @@ DDD・環境構築・Git運用を学習目的で段階的に開発する。
 - 内部表現に BigDecimal を採用
 - 金額は0以上とし、不正値は生成時に防止
 - 金額演算は Money 自身が責務を持つ
+
+### TransactionDate 設計
+
+- TransactionDate を Value Object として定義
+- 内部表現に LocalDate を採用
+- 未来日を禁止する業務ルールを内包
