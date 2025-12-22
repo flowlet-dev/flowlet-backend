@@ -1,7 +1,5 @@
 package com.example.flowlet.domain.model.user;
 
-import java.util.Objects;
-
 /**
  * ユーザー名を表す値オブジェクト。
  *
