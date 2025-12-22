@@ -5,6 +5,26 @@
 このプロジェクトは、家計管理アプリ「Flowlet」を題材に、
 DDD・環境構築・Git運用を学習目的で段階的に開発する。
 
+## ドメイン整理（初期）
+
+### エンティティ候補
+
+- User
+- Category
+- Transaction
+
+### Value Object 候補
+
+- UserName（姓・名）
+- Money
+- TransactionDate
+- FlowType（収入 / 支出）
+
+### 方針
+
+- DB設計からEntityを起こさない
+- 業務用語（ユビキタス言語）を最優先する
+
 ## Decision Log
 
 ### Spring Boot 初期化
@@ -34,3 +54,10 @@ DDD・環境構築・Git運用を学習目的で段階的に開発する。
     - 学習時にミスに気づきやすい
     - 新規プロジェクトでの採用が増えている
 - Groovy DSL は情報量が多いが、理解より模倣になりやすいため今回は不採用
+
+### FlowType 設計
+
+- FlowType は enum として定義
+- Category / Transaction 共通の業務概念
+- 値が固定であるため enum が最適と判断
+- 将来的に可変になった場合は Entity 化を検討
