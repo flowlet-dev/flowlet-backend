@@ -61,3 +61,10 @@ DDD・環境構築・Git運用を学習目的で段階的に開発する。
 - Category / Transaction 共通の業務概念
 - 値が固定であるため enum が最適と判断
 - 将来的に可変になった場合は Entity 化を検討
+
+### UserName 設計
+
+- UserName は Value Object として定義
+- Java record を使用し不変性を担保
+- 姓・名を分離して保持
+- 不正な状態は生成時に防ぐ設計とした
