@@ -81,3 +81,17 @@ DDD・環境構築・Git運用を学習目的で段階的に開発する。
 - TransactionDate を Value Object として定義
 - 内部表現に LocalDate を採用
 - 未来日を禁止する業務ルールを内包
+
+### Category 設計
+
+- Category は Entity として定義
+- 識別子は業務的意味を持つ category_cd
+- FlowType を必須項目とした
+- 初期状態での不正値を許さない設計とした
+
+### Category 命名
+
+- Category ではなく MCategory を採用
+- DB の m_category との対応を明確にするため
+- 学習段階では構造が分かりやすい命名を優先
+- 将来的にドメインを純化する場合は名称変更を検討
