@@ -2,6 +2,8 @@ package com.example.flowlet.domain.model.common;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
@@ -28,6 +30,27 @@ public abstract class AbstractAuditableEntity {
     private LocalDateTime updateAt;
 
     protected AbstractAuditableEntity() {
+    }
+
+    /**
+     * 永続化前の処理。
+     */
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createAt = now;
+        this.updateAt = now;
+        this.createBy = "system";
+        this.updateBy = "system";
+    }
+
+    /**
+     * 更新前の処理。
+     */
+    @PreUpdate
+    protected void onUpdate() {
+        this.updateAt = LocalDateTime.now();
+        this.updateBy = "system";
     }
 
 }

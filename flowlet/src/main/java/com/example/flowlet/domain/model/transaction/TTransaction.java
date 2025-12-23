@@ -22,11 +22,11 @@ public class TTransaction extends AbstractAuditableEntity {
     private Long id;
 
     @Embedded
-    @Column(name = "amount", nullable = false)
+    @AttributeOverride(name = "value", column = @Column(name = "amount", nullable = false))
     private TransactionAmount amount;
 
     @Embedded
-    @Column(name = "transaction_date", nullable = false)
+    @AttributeOverride(name = "value", column = @Column(name = "transaction_date", nullable = false))
     private TransactionDate transactionDate;
 
     @Enumerated(EnumType.STRING)
