@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * 取引に関するAPIを提供するコントローラー。
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/transactions")
 public class TransactionController {
