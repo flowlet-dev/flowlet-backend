@@ -24,10 +24,10 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * その他すべての例外。
+     * その他の例外。
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleException(Exception ex) {
+    public ResponseEntity<ApiErrorResponse> handleException() {
         ApiErrorResponse response =
                 new ApiErrorResponse("INTERNAL_SERVER_ERROR", "Unexpected error occurred.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

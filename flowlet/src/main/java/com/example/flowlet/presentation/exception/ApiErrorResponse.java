@@ -5,7 +5,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 /**
- * APIエラーレスポンスDTO。
+ * API繧E繝ｩ繝ｼ繝ｬ繧E繝昴繧EDTO縲・
  */
 @Getter
 public class ApiErrorResponse {
