@@ -1,106 +1,60 @@
-# flowlet-backend
+# Flowlet Backend
 
-## 開発方針
+家計管理アプリ「Flowlet」のバックエンドシステムです。
+DDD（ドメイン駆動設計）の実践、Java 25/Spring Boot 4.0といった最新技術スタックの活用、およびクリーンな設計を学習・構築することを目的としています。
 
-このプロジェクトは、家計管理アプリ「Flowlet」を題材に、
-DDD・環境構築・Git運用を学習目的で段階的に開発する。
+## 🚀 プロジェクトの目的
 
-## ドメイン整理（初期）
+- **DDDの実践**: 業務ドメインを深く理解し、コードに落とし込む。
+- **最新技術の追随**: Java 25 の新機能（record, Pattern Matching等）を積極的に活用する。
+- **堅牢な設計**: 型安全な Value Object やガード節を用い、不正な状態を許さない実装を行う。
 
-### エンティティ候補
+## 🛠 技術スタック
 
-- User
-- Category
-- Transaction
+- **Language**: Java 25
+- **Framework**: Spring Boot 4.0.1
+- **Build Tool**: Gradle Kotlin DSL
+- **Database**: PostgreSQL
+- **Library**:
+  - Spring Data JPA
+  - Spring Bean Validation
+  - Lombok (Entityのみ)
 
-### Value Object 候補
+## 🏗 アーキテクチャ
 
-- UserName（姓・名）
-- Money
-- TransactionDate
-- FlowType（収入 / 支出）
+DDDの階層化アーキテクチャを採用しています。
 
-### 方針
+- `presentation`: 外部インターフェース（REST API Controller, Exception Handler）
+- `application`: ユースケース、DTO、トランザクション管理
+- `domain`: ドメインモデル（Entity, Value Object）、リポジトリインターフェース
+- `infrastructure`: 永続化の実装（Spring Data JPA）
 
-- DB設計からEntityを起こさない
-- 業務用語（ユビキタス言語）を最優先する
+## 項目定義（ドメイン整理）
 
-## 動作確認
+### エンティティ / バリューオブジェクト
+- **Transaction (TTransaction)**: 取引データ（収入・支出）
+- **Category (MCategory)**: 取引カテゴリー（食費、給与など）
+- **Money**: 金額（0以上を保証、計算ロジックを内包）
+- **TransactionDate**: 取引日（未来日禁止のルールを内包）
+- **FlowType**: 収支種別（収入 / 支出）のEnum
+- **UserName**: ユーザー名（姓・名を分離して保持）
 
-- POST /api/transactions
-- curl.exe により正常に登録できることを確認
-- t_transaction にレコードが insert されることを確認
+## 📖 Decision Log（設計判断の記録）
 
+### Java 25 & Spring Boot 4.0 採用
+最新の言語機能（recordによるValue Object実装など）を最大限活用し、型安全で簡潔なコードを目指すため。
 
-## Decision Log
+### Entity 命名規則
+DBのテーブル構造（`m_category`, `t_transaction`）との対応を直感的に理解できるよう、`MCategory` や `TTransaction` といった命名を採用。
 
-### Spring Boot 初期化
+### Value Object の record 化
+不変性（Immutability）を標準で担保し、ボイラープレートを排除するため。
 
-- Gradle を採用
-- Spring Web / JPA / PostgreSQL を導入
-- Security は初期段階では導入しない
+---
 
-理由：
-まずはドメイン設計とDB接続を優先し、
-認証認可は後から段階的に導入するため。
+## 🛠 セットアップと実行
 
-### Build Tool 選定
-
-- Gradle を採用
-- 理由：
-    - 設定が簡潔で学習しやすい
-    - Docker / CI との相性が良い
-    - 将来的な拡張性が高い
-- Maven は安定しているが、今回の目的には Gradle が適していると判断
-
-### Gradle DSL 選定
-
-- Kotlin DSL（build.gradle.kts）を採用
-- 理由：
-    - 型安全でIDE補完が強い
-    - 学習時にミスに気づきやすい
-    - 新規プロジェクトでの採用が増えている
-- Groovy DSL は情報量が多いが、理解より模倣になりやすいため今回は不採用
-
-### FlowType 設計
-
-- FlowType は enum として定義
-- Category / Transaction 共通の業務概念
-- 値が固定であるため enum が最適と判断
-- 将来的に可変になった場合は Entity 化を検討
-
-### UserName 設計
-
-- UserName は Value Object として定義
-- Java record を使用し不変性を担保
-- 姓・名を分離して保持
-- 不正な状態は生成時に防ぐ設計とした
-
-### Money 設計
-
-- Money を Value Object として定義
-- 内部表現に BigDecimal を採用
-- 金額は0以上とし、不正値は生成時に防止
-- 金額演算は Money 自身が責務を持つ
-
-### TransactionDate 設計
-
-- TransactionDate を Value Object として定義
-- 内部表現に LocalDate を採用
-- 未来日を禁止する業務ルールを内包
-
-### Category 設計
-
-- Category は Entity として定義
-- 識別子は業務的意味を持つ category_cd
-- FlowType を必須項目とした
-- 初期状態での不正値を許さない設計とした
-
-### Category 命名
-
-- Category ではなく MCategory を採用
-- DB の m_category との対応を明確にするため
-- 学習段階では構造が分かりやすい命名を優先
-- 将来的にドメインを純化する場合は名称変更を検討
-
-
+### 起動方法
+```bash
+./gradlew bootRun
+```
