@@ -30,10 +30,12 @@
   - 外部とのインターフェース。HTTPリクエストの受付とレスポンス変換。
 - **Application (`application`)**: `ApplicationService`, `DTO`
   - ユースケースの実現。トランザクション境界の管理。
-- **Domain (`domain`)**: `Model (Entity/VO)`, `Repository Interface`, `DomainService`
-  - 業務ロジックの核。外部ライブラリへの依存を最小限にする。
-- **Infrastructure**: `Repository Implementation`, `Config`
+- **Domain (`domain`)**: `model`, `repository` (Interface), `service` (Domain Service)
+  - 業務ロジックの核。外部ライブラリ（JPA等）への依存を排除する。
+  - `model` は不変（Immutable）なオブジェクトとして設計し、JPAエンティティとは分離する。
+- **Infrastructure**: `persistence` (Entity, Repository Implementation, Mapper), `config`
   - DBアクセスや外部通信の具体的な実装。
+  - JPAエンティティは `infrastructure.persistence.entity` に配置し、ドメインモデルとの変換は `infrastructure.persistence.mapper` で行う。
 
 ## 4. コーディング規約
 
@@ -45,15 +47,22 @@
 - **制御構文**: 可読性向上のため、`if` 文などの制御構文では常に波括弧 `{}` を使用する。
 
 ### 4.2. 命名規則
-- **Entity**: プレフィックス（M/T等）は使用せず、ドメイン概念をそのままクラス名とする（例: `PhysicalAccount`, `Transaction`）。
+- **Domain Model**: ドメイン概念をそのままクラス名とする（例: `PhysicalAccount`, `Transaction`）。
+- **JPA Entity**: テーブル名に基づいた名称とする（例: `MPhysicalAccount`, `TTransaction`）。
 - **パッケージ構造**: `com.example.flowlet.[layer].[subdomain]` の形式に従う。
 
-### 4.3. バリデーションとエラーハンドリング
+### 4.3. リポジトリ構成
+- **Domain Repository (Interface)**: `domain.repository` に配置。ドメインモデルを扱う。
+- **Infrastructure Repository (Implementation)**: `infrastructure.persistence.repository` に配置。
+  - `JpaRepository` を継承したインターフェース（例: `JpaTransactionRepository`）と、ドメインリポジトリを実装するクラス（例: `TransactionRepositoryImpl`）の2段構成とする。
+  - 実装クラスには `@Primary` を付与し、アプリケーション層ではドメインリポジトリのインターフェースを DI して使用する。
+
+### 4.4. バリデーションとエラーハンドリング
 - **入力チェック**: DTOで `jakarta.validation` アノテーションを使用。
 - **業務ルール**: Entity/Value Object のコンストラクタでチェックを行い、不正な場合は適切なカスタム例外または `IllegalArgumentException` をスローする。
 - **エラーメッセージ**: メッセージ定義（MessageSource等）で一元管理する。
 
-### 4.4. テスト方針
+### 4.5. テスト方針
 - **ドメインロジック**: 複雑な計算（同期、平準化、予算対比）については、JUnit 5を用いて徹底的にユニットテストを行う。
 - **正常・異常系**: 境界値テストを含め、業務上の制約が守られていることをテストで担保する。
 
@@ -61,7 +70,8 @@
 
 - **Spring Boot 4.0 / Spring Data JPA**: 最新のSpringエコシステムを活用。
 - **Lombok**: Entity の Getter/Setter 等、ボイラープレートコードの削減に使用。Value Object (`record`) には使用しない。
-- **PostgreSQL**: 永続化データベース。
+- **MapStruct**: ドメインモデルとエンティティの相互変換に使用。Recordクラスに対応させるため、アクセサ名の命名規則に注意する。
+- **PostgreSQL**: 永続化データベース。時刻取得は `CURRENT_TIMESTAMP AT TIME ZONE 'Asia/Tokyo'` を使用し、日本時間で管理する。
 
 ## 6. ドキュメント・Git 運用
 
