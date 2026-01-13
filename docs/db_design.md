@@ -9,8 +9,12 @@
 erDiagram
     m_category ||--o{ m_category : "親子関係"
     m_category ||--o{ t_transaction_detail : "分類"
+    m_category ||--o{ m_budget : "予算設定"
+    m_category ||--o{ m_recurring_rule : "定期設定"
     m_physical_account ||--o{ t_transaction_detail : "資産変動"
+    m_physical_account ||--o{ m_recurring_rule : "定期設定"
     m_virtual_account ||--o{ t_transaction_detail : "目的変動"
+    m_virtual_account ||--o{ m_recurring_rule : "定期設定"
     t_transaction ||--|{ t_transaction_detail : "内訳"
     m_code ||--o{ m_category : "名称管理"
     m_code ||--o{ m_physical_account : "名称管理"
@@ -51,6 +55,37 @@ erDiagram
         varchar create_by
         timestamp update_at
         varchar update_by
+    }
+
+    m_budget {
+        serial budget_id PK "予算ID"
+        varchar category_cd FK "カテゴリーコード"
+        decimal amount "予算額"
+        date start_date "開始日"
+        date end_date "終了日"
+        timestamp create_at
+        timestamp update_at
+    }
+
+    m_recurring_rule {
+        serial recurring_rule_id PK "定期実行ルールID"
+        varchar rule_name "ルール名"
+        decimal amount "金額"
+        int transaction_day "実行日(日)"
+        varchar category_cd FK "カテゴリーコード"
+        int physical_account_id FK "実口座ID"
+        int virtual_account_id FK "仮想口座ID"
+        varchar description "摘要"
+        boolean is_active "有効フラグ"
+        timestamp create_at
+        timestamp update_at
+    }
+
+    m_user_setting {
+        varchar setting_key PK "設定キー"
+        varchar setting_value "設定値"
+        timestamp create_at
+        timestamp update_at
     }
 
     t_transaction {
@@ -111,14 +146,42 @@ erDiagram
 | `account_name` | VARCHAR(50) | NOT NULL | 目的名（例：旅行用、予備費、自由費） |
 | `is_liquid` | BOOLEAN | NOT NULL | 流動資産フラグ（TRUE: 「あといくら使えるか」の計算対象） |
 
-### 3.5. t_transaction (取引)
+### 3.5. m_budget (予算マスタ)
+| カラム名 | 型 | 制約 | 説明 |
+| :--- | :--- | :--- | :--- |
+| `budget_id` | SERIAL | PK | 予算ID |
+| `category_cd` | VARCHAR(20) | FK, NOT NULL | カテゴリーコード |
+| `amount` | DECIMAL(15,2) | NOT NULL | 予算額 |
+| `start_date` | DATE | NOT NULL | 開始日 |
+| `end_date` | DATE | NOT NULL | 終了日 |
+
+### 3.6. m_recurring_rule (定期実行ルールマスタ)
+| カラム名 | 型 | 制約 | 説明 |
+| :--- | :--- | :--- | :--- |
+| `recurring_rule_id` | SERIAL | PK | 定期実行ルールID |
+| `rule_name` | VARCHAR(100) | NOT NULL | ルール名 |
+| `amount` | DECIMAL(15,2) | NOT NULL | 金額 |
+| `transaction_day` | INT | NOT NULL | 実行日（日） |
+| `category_cd` | VARCHAR(20) | FK, NOT NULL | カテゴリーコード |
+| `physical_account_id` | INT | FK, NOT NULL | 実口座ID |
+| `virtual_account_id` | INT | FK, NOT NULL | 仮想口座ID |
+| `description` | VARCHAR(200) | | 摘要 |
+| `is_active` | BOOLEAN | NOT NULL | 有効フラグ |
+
+### 3.7. m_user_setting (ユーザー設定マスタ)
+| カラム名 | 型 | 制約 | 説明 |
+| :--- | :--- | :--- | :--- |
+| `setting_key` | VARCHAR(50) | PK | 設定キー（例: `closing_day`） |
+| `setting_value` | VARCHAR(100) | NOT NULL | 設定値 |
+
+### 3.8. t_transaction (取引)
 | カラム名 | 型 | 制約 | 説明 |
 | :--- | :--- | :--- | :--- |
 | `transaction_id` | SERIAL | PK | 取引ID |
 | `transaction_date` | DATE | NOT NULL | 取引日 |
 | `description` | VARCHAR(200) | | 取引全体の説明・メモ |
 
-### 3.6. t_transaction_detail (取引明細)
+### 3.9. t_transaction_detail (取引明細)
 | カラム名 | 型 | 制約 | 説明 |
 | :--- | :--- | :--- | :--- |
 | `detail_id` | SERIAL | PK | 明細ID |
