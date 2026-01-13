@@ -2,6 +2,7 @@ package com.example.flowlet.infrastructure.persistence.repository;
 
 import com.example.flowlet.domain.model.PhysicalAccount;
 import com.example.flowlet.domain.repository.PhysicalAccountRepository;
+import com.example.flowlet.infrastructure.persistence.entity.MPhysicalAccount;
 import com.example.flowlet.infrastructure.persistence.mapper.PhysicalAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -26,19 +27,19 @@ public class PhysicalAccountRepositoryImpl implements PhysicalAccountRepository 
     }
 
     @Override
-    public Optional<PhysicalAccount> findById(Long id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+    public Optional<PhysicalAccount> findById(Long physicalAccountId) {
+        return jpaRepository.findById(physicalAccountId).map(mapper::toDomain);
     }
 
     @Override
     public PhysicalAccount save(PhysicalAccount physicalAccount) {
-        var entity = mapper.toEntity(physicalAccount);
-        var savedEntity = jpaRepository.save(entity);
+        MPhysicalAccount entity = mapper.toEntity(physicalAccount);
+        MPhysicalAccount savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
     @Override
-    public void deleteById(Long id) {
-        jpaRepository.deleteById(id);
+    public void deleteById(Long physicalAccountId) {
+        jpaRepository.deleteById(physicalAccountId);
     }
 }

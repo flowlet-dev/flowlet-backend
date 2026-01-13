@@ -2,6 +2,7 @@ package com.example.flowlet.infrastructure.persistence.repository;
 
 import com.example.flowlet.domain.model.VirtualAccount;
 import com.example.flowlet.domain.repository.VirtualAccountRepository;
+import com.example.flowlet.infrastructure.persistence.entity.MVirtualAccount;
 import com.example.flowlet.infrastructure.persistence.mapper.VirtualAccountMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -26,19 +27,19 @@ public class VirtualAccountRepositoryImpl implements VirtualAccountRepository {
     }
 
     @Override
-    public Optional<VirtualAccount> findById(Long id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+    public Optional<VirtualAccount> findById(Long virtualAccountId) {
+        return jpaRepository.findById(virtualAccountId).map(mapper::toDomain);
     }
 
     @Override
     public VirtualAccount save(VirtualAccount virtualAccount) {
-        var entity = mapper.toEntity(virtualAccount);
-        var savedEntity = jpaRepository.save(entity);
+        MVirtualAccount entity = mapper.toEntity(virtualAccount);
+        MVirtualAccount savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
     @Override
-    public void deleteById(Long id) {
-        jpaRepository.deleteById(id);
+    public void deleteById(Long virtualAccountId) {
+        jpaRepository.deleteById(virtualAccountId);
     }
 }

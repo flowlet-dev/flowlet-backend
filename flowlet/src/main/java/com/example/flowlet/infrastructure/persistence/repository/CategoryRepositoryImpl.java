@@ -2,6 +2,7 @@ package com.example.flowlet.infrastructure.persistence.repository;
 
 import com.example.flowlet.domain.model.Category;
 import com.example.flowlet.domain.repository.CategoryRepository;
+import com.example.flowlet.infrastructure.persistence.entity.MCategory;
 import com.example.flowlet.infrastructure.persistence.mapper.CategoryMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -35,8 +36,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
      * {@inheritDoc}
      */
     @Override
-    public Optional<Category> findById(String id) {
-        return jpaRepository.findById(id).map(mapper::toDomain);
+    public Optional<Category> findById(String categoryCd) {
+        return jpaRepository.findById(categoryCd).map(mapper::toDomain);
     }
 
     /**
@@ -44,8 +45,8 @@ public class CategoryRepositoryImpl implements CategoryRepository {
      */
     @Override
     public Category save(Category category) {
-        var entity = mapper.toEntity(category);
-        var savedEntity = jpaRepository.save(entity);
+        MCategory entity = mapper.toEntity(category);
+        MCategory savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
@@ -53,7 +54,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
      * {@inheritDoc}
      */
     @Override
-    public void deleteById(String id) {
-        jpaRepository.deleteById(id);
+    public void deleteById(String categoryCd) {
+        jpaRepository.deleteById(categoryCd);
     }
 }

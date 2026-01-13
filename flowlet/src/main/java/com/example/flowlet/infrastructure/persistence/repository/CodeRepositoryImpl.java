@@ -3,6 +3,7 @@ package com.example.flowlet.infrastructure.persistence.repository;
 import com.example.flowlet.domain.model.Code;
 import com.example.flowlet.domain.repository.CodeRepository;
 import com.example.flowlet.infrastructure.persistence.entity.CodeId;
+import com.example.flowlet.infrastructure.persistence.entity.MCode;
 import com.example.flowlet.infrastructure.persistence.mapper.CodeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -45,8 +46,8 @@ public class CodeRepositoryImpl implements CodeRepository {
      */
     @Override
     public Code save(Code code) {
-        var entity = mapper.toEntity(code);
-        var savedEntity = jpaRepository.save(entity);
+        MCode entity = mapper.toEntity(code);
+        MCode savedEntity = jpaRepository.save(entity);
         return mapper.toDomain(savedEntity);
     }
 
