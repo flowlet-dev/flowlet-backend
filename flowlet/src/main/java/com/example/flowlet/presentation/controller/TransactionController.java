@@ -4,9 +4,13 @@ import com.example.flowlet.application.dto.TransactionRequest;
 import com.example.flowlet.application.dto.TransactionResponse;
 import com.example.flowlet.application.service.TransactionApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +32,7 @@ public class TransactionController {
      *
      * @return 取引レスポンスDTOのリスト
      */
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "取引一覧取得", description = "登録されているすべての取引を取得します。")
     public List<TransactionResponse> findAll() {
         return transactionApplicationService.findAll();
@@ -40,7 +44,7 @@ public class TransactionController {
      * @param transactionId 取引ID
      * @return 取引レスポンスDTO
      */
-    @GetMapping("/{transactionId}")
+    @GetMapping(path = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "取引取得", description = "指定されたIDの取引詳細を取得します。")
     public TransactionResponse findById(@PathVariable Long transactionId) {
         return transactionApplicationService.findById(transactionId);
@@ -52,9 +56,14 @@ public class TransactionController {
      * @param request 登録リクエストDTO
      * @return 登録された取引レスポンスDTO
      */
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "取引登録", description = "新しい取引（およびその明細）を登録します。")
+    @Operation(summary = "取引登録", description = "新しい取引（およびその明細）を登録します。",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "登録成功"),
+                    @ApiResponse(responseCode = "400", description = "バリデーションエラーまたは業務エラー",
+                            content = @Content(schema = @Schema(example = "{\"message\": \"取引には少なくとも1つの明細が必要です。\"}")))
+            })
     public TransactionResponse create(@RequestBody @Validated TransactionRequest request) {
         return transactionApplicationService.create(request);
     }
@@ -64,7 +73,7 @@ public class TransactionController {
      *
      * @param transactionId 取引ID
      */
-    @DeleteMapping("/{transactionId}")
+    @DeleteMapping(path = "/{transactionId}", produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "取引削除", description = "指定されたIDの取引を削除します。")
     public void delete(@PathVariable Long transactionId) {

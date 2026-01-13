@@ -5,6 +5,7 @@ import com.example.flowlet.application.service.FinancialSummaryApplicationServic
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,7 @@ public class FinancialSummaryController {
      *
      * @return 財務サマリーレスポンスDTO
      */
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "財務サマリー取得", description = "締め日に基づく今月の集計期間、流動資産合計、期間収支、自由に使える額を取得します。")
     public FinancialSummaryResponse getCurrentSummary() {
         return financialSummaryApplicationService.getCurrentSummary();

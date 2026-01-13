@@ -1,6 +1,7 @@
 package com.example.flowlet.application.dto;
 
 import com.example.flowlet.domain.model.Transaction;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,6 +10,7 @@ import java.util.List;
 /**
  * 取引のレスポンス用DTO。
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record TransactionResponse(
         Long transactionId,
         LocalDate transactionDate,

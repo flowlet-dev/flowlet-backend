@@ -1,10 +1,12 @@
 package com.example.flowlet.application.dto;
 
 import com.example.flowlet.domain.model.VirtualAccount;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * 仮想口座のレスポンス用DTO。
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record VirtualAccountResponse(
     Long virtualAccountId,
     String accountName,

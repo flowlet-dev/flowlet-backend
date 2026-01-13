@@ -1,5 +1,6 @@
 package com.example.flowlet.application.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -9,6 +10,7 @@ import java.math.BigDecimal;
 /**
  * 定期実行ルールの登録・更新リクエストDTO。
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record RecurringRuleRequest(
     @NotBlank String ruleName,
     @NotNull BigDecimal amount,

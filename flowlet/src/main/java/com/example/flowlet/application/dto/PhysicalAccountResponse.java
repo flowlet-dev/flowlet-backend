@@ -1,10 +1,12 @@
 package com.example.flowlet.application.dto;
 
 import com.example.flowlet.domain.model.PhysicalAccount;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
  * 実口座のレスポンス用DTO。
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record PhysicalAccountResponse(
     Long physicalAccountId,
     String accountName,

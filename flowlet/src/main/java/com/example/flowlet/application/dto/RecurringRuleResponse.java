@@ -1,11 +1,14 @@
 package com.example.flowlet.application.dto;
 
 import com.example.flowlet.domain.model.RecurringRule;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.math.BigDecimal;
 
 /**
  * 定期実行ルールのレスポンスDTO。
  */
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public record RecurringRuleResponse(
     Long recurringRuleId,
     String ruleName,
