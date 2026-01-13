@@ -29,9 +29,9 @@ public class TransactionApplicationService {
     }
 
     /**
-     * 取引を登録するE
+     * 取引を登録する
      *
-     * @param request 取引登録リクエスチE
+     * @param request 取引登録リクエスト
      */
     @Transactional
     public void register(TransactionRequest request) {
@@ -42,7 +42,7 @@ public class TransactionApplicationService {
         Transaction transaction = new Transaction(
                 null,
                 request.getTransactionDate(),
-                "Registered via API",
+                request.getDescription(),
                 new ArrayList<>()
         );
 
