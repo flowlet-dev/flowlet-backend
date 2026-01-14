@@ -11,10 +11,12 @@ import com.example.flowlet.domain.repository.CategoryRepository;
 import com.example.flowlet.domain.repository.PhysicalAccountRepository;
 import com.example.flowlet.domain.repository.RecurringRuleRepository;
 import com.example.flowlet.domain.repository.VirtualAccountRepository;
+import com.example.flowlet.domain.service.RecurringTransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -29,6 +31,7 @@ public class RecurringRuleApplicationService {
     private final CategoryRepository categoryRepository;
     private final PhysicalAccountRepository physicalAccountRepository;
     private final VirtualAccountRepository virtualAccountRepository;
+    private final RecurringTransactionService recurringTransactionService;
 
     public List<RecurringRuleResponse> findAll() {
         return recurringRuleRepository.findAll().stream()
@@ -117,5 +120,13 @@ public class RecurringRuleApplicationService {
     @Transactional
     public void delete(Long recurringRuleId) {
         recurringRuleRepository.deleteById(recurringRuleId);
+    }
+
+    /**
+     * 定期実行ルールを手動で即時実行します（テスト用または即時反映用）。
+     */
+    @Transactional
+    public void executeNow() {
+        recurringTransactionService.generateRecurringTransactions(LocalDate.now());
     }
 }

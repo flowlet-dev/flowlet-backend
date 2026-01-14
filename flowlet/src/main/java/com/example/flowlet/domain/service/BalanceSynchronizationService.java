@@ -33,9 +33,21 @@ public class BalanceSynchronizationService {
                 .map(TransactionDetail::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        // 全取引の明細金額を合計して、入出金がバランスしていれば同期されているとみなす
-        // (収入はプラス、支出はマイナスの金額として記録される想定)
-        // ただし、初期残高などの扱いによってこのロジックは調整が必要になる可能性がある。
         return totalAmount.compareTo(BigDecimal.ZERO) == 0;
+    }
+
+    /**
+     * 指定された実口座の現在の残高を計算します。
+     *
+     * @param physicalAccountId 実口座ID
+     * @return 残高
+     */
+    public BigDecimal calculatePhysicalAccountBalance(Long physicalAccountId) {
+        List<Transaction> allTransactions = transactionRepository.findAll();
+        return allTransactions.stream()
+                .flatMap(t -> t.details().stream())
+                .filter(d -> d.physicalAccount() != null && d.physicalAccount().physicalAccountId().equals(physicalAccountId))
+                .map(TransactionDetail::amount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

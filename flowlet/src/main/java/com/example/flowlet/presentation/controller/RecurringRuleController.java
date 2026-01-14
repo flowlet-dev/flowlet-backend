@@ -28,20 +28,20 @@ public class RecurringRuleController {
     private final RecurringRuleApplicationService recurringRuleApplicationService;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "定期実行ルール一覧取得")
+    @Operation(summary = "定期実行ルール一覧取得", description = "登録されているすべての定期実行ルールを取得します。")
     public List<RecurringRuleResponse> findAll() {
         return recurringRuleApplicationService.findAll();
     }
 
     @GetMapping(path = "/{recurringRuleId}",produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "定期実行ルール取得")
+    @Operation(summary = "定期実行ルール取得", description = "指定されたIDの定期実行ルール詳細を取得します。")
     public RecurringRuleResponse findById(@PathVariable Long recurringRuleId) {
         return recurringRuleApplicationService.findById(recurringRuleId);
     }
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "定期実行ルール登録",
+    @Operation(summary = "定期実行ルール登録", description = "新しい定期実行ルールを登録します。",
             responses = {
                     @ApiResponse(responseCode = "201", description = "登録成功"),
                     @ApiResponse(responseCode = "400", description = "バリデーションエラーまたは業務エラー",
@@ -52,7 +52,7 @@ public class RecurringRuleController {
     }
 
     @PutMapping(path = "/{recurringRuleId}",produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "定期実行ルール更新",
+    @Operation(summary = "定期実行ルール更新", description = "指定されたIDの定期実行ルール情報を更新します。",
             responses = {
                     @ApiResponse(responseCode = "200", description = "更新成功"),
                     @ApiResponse(responseCode = "400", description = "バリデーションエラーまたは業務エラー",
@@ -66,8 +66,15 @@ public class RecurringRuleController {
 
     @DeleteMapping(path = "/{recurringRuleId}",produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "定期実行ルール削除")
+    @Operation(summary = "定期実行ルール削除", description = "指定されたIDの定期実行ルールを削除します。")
     public void delete(@PathVariable Long recurringRuleId) {
         recurringRuleApplicationService.delete(recurringRuleId);
+    }
+
+    @PostMapping(path = "/execute-now")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @Operation(summary = "定期実行ルールを手動で即時実行", description = "本日の日付で適用可能な定期実行ルールを即時実行し、取引を登録します。")
+    public void executeNow() {
+        recurringRuleApplicationService.executeNow();
     }
 }

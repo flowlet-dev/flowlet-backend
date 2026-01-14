@@ -2,7 +2,10 @@ package com.example.flowlet.domain.service;
 
 import com.example.flowlet.domain.exception.BusinessException;
 import com.example.flowlet.domain.model.Transaction;
+import com.example.flowlet.domain.model.TransactionDetail;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 /**
  * 取引に関するドメインサービス。
@@ -13,9 +16,7 @@ public class TransactionDomainService {
 
     /**
      * 取引の整合性を検証します。
-     * 1つの取引における全明細の金額が0になることを確認します（複式簿記的な整合性）。
-     * ※このシステムでは、実口座と仮想口座への割り振りが同時に行われるため、
-     * 明細内の金額の合計が実口座側・仮想口座側それぞれでバランスしている必要があります。
+     * 1つの取引における全明細の金額が整合していることを確認します。
      *
      * @param transaction 検証対象の取引
      * @throws BusinessException 整合性が取れていない場合
@@ -25,12 +26,30 @@ public class TransactionDomainService {
             throw new BusinessException("error.transaction.no_details");
         }
 
-        // 実口座側の合計と仮想口座側の合計が一致していることを確認する
-        // (実口座への入出金 = 仮想口座への割り振り)
-        // 今回の設計では、1つの明細(TransactionDetail)に実口座と仮想口座が対で記録されるため、
-        // 常に合計は一致するはずだが、将来的な拡張や特殊なケースを考慮して検証ロジックを置く。
+        BigDecimal physicalTotal = BigDecimal.ZERO;
+        BigDecimal virtualTotal = BigDecimal.ZERO;
 
-        // 現状の要件（3.1 資産管理）では「すべての実口座の残高合計は、すべての仮想口座の残高合計と一致するように管理する」
-        // とあるため、個々の取引においてもこの原則が守られている必要がある。
+        for (TransactionDetail detail : transaction.details()) {
+            if (detail.amount() == null || detail.amount().compareTo(BigDecimal.ZERO) == 0) {
+                throw new BusinessException("error.transaction.detail.zero_amount");
+            }
+
+            if (detail.physicalAccount() != null) {
+                physicalTotal = physicalTotal.add(detail.amount());
+            }
+            if (detail.virtualAccount() != null) {
+                virtualTotal = virtualTotal.add(detail.amount());
+            }
+
+            if (detail.physicalAccount() == null && detail.virtualAccount() == null) {
+                throw new BusinessException("error.transaction.detail.no_account");
+            }
+        }
+
+        // 実口座側の合計と仮想口座側の合計が一致していることを確認する
+        // (実口座の増減 = 仮想口座の増減)
+        if (physicalTotal.compareTo(virtualTotal) != 0) {
+            throw new BusinessException("error.transaction.imbalance", physicalTotal, virtualTotal);
+        }
     }
 }

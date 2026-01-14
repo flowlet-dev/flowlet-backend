@@ -107,7 +107,7 @@
 
 ### 5.1 財務サマリー取得
 - **URL**: `GET /api/financial-summary`
-- **概要**: 締め日に基づく今月の集計期間、流動資産合計、期間収支、自由に使える額を取得します。
+- **概要**: 締め日に基づく今月の集計期間、流動資産合計、期間収支、自由に使える額、および残高不足アラートを取得します。
 - **レスポンス**:
   ```json
   {
@@ -115,7 +115,11 @@
     "endDate": "2024-01-25",
     "currentLiquidAssets": 500000,
     "periodBalance": -20000,
-    "availableAmount": 480000
+    "availableAmount": 480000,
+    "alerts": [
+      "口座「〇〇銀行」の残高が不足する可能性があります（予定支出合計: 50000, 現在残高: 10000）",
+      "提案: 口座「△△貯金」から「〇〇銀行」へ 40000 円を振り替えてください"
+    ]
   }
   ```
 
@@ -139,6 +143,28 @@
     "physicalAccountId": 1,
     "virtualAccountId": 1,
     "isActive": true
+  }
+  ```
+
+### 6.3 手動即時実行
+- **URL**: `POST /api/recurring-rules/execute-now`
+- **概要**: 本日の日付で適用可能な定期実行ルールを即時実行し、取引を登録します。
+
+---
+
+## 7. ユーザー設定 (User Setting)
+締め日などのユーザー設定を管理します。
+
+### 7.1 設定取得
+- **URL**: `GET /api/user-settings/{key}`
+- **概要**: 指定したキーの設定値を取得します（例: `closing_day`）。
+
+### 7.2 設定更新
+- **URL**: `PUT /api/user-settings/{key}`
+- **リクエスト**:
+  ```json
+  {
+    "settingValue": "25"
   }
   ```
 

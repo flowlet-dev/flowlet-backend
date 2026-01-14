@@ -3,11 +3,13 @@ package com.example.flowlet.application.service;
 import com.example.flowlet.application.dto.FinancialSummaryResponse;
 import com.example.flowlet.domain.exception.BusinessException;
 import com.example.flowlet.domain.service.FinancialSummaryService;
+import com.example.flowlet.domain.service.TransferSuggestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * 財務統計に関するユースケースを提供するアプリケーションサービス。
@@ -17,6 +19,7 @@ import java.time.LocalDate;
 public class FinancialSummaryApplicationService {
 
     private final FinancialSummaryService financialSummaryService;
+    private final TransferSuggestionService transferSuggestionService;
 
     /**
      * 現在の財務サマリーを取得します。
@@ -34,15 +37,18 @@ public class FinancialSummaryApplicationService {
             BigDecimal periodBalance = financialSummaryService.calculatePeriodBalance(startDate, endDate);
 
             // 「あといくら使えるか」の計算ロジック
-            // 現時点では簡易的に「流動資産合計」を表示する
-            // 将来的には「予定支出」や「積立目標」を差し引くロジックを追加する
+            BigDecimal availableAmount = financialSummaryService.calculateAvailableAmount(today, endDate);
+
+            // アラートの取得
+            List<String> alerts = transferSuggestionService.detectBalanceAlerts(endDate);
 
             return new FinancialSummaryResponse(
                     startDate,
                     endDate,
                     currentLiquidAssets,
                     periodBalance,
-                    currentLiquidAssets
+                    availableAmount,
+                    alerts
             );
         } catch (Exception e) {
             throw new BusinessException("error.unexpected", e.getMessage());

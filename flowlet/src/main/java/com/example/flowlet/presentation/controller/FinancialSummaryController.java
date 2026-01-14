@@ -27,7 +27,7 @@ public class FinancialSummaryController {
      * @return 財務サマリーレスポンスDTO
      */
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @Operation(summary = "財務サマリー取得", description = "締め日に基づく今月の集計期間、流動資産合計、期間収支、自由に使える額を取得します。")
+    @Operation(summary = "財務サマリー取得", description = "締め日に基づく今月の集計期間、流動資産合計、期間収支、自由に使える額、および残高不足アラートを取得します。")
     public FinancialSummaryResponse getCurrentSummary() {
         return financialSummaryApplicationService.getCurrentSummary();
     }
