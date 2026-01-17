@@ -63,13 +63,13 @@
 - **JPA Entity**: テーブル名に基づいた名称とする（例: `MPhysicalAccount`, `TTransaction`）。
 - **パッケージ構造**: `com.example.flowlet.[layer].[subdomain]` の形式に従う。
 
-### 4.3. リポジトリ構成
-- **Domain Repository (Interface)**: `domain.repository` に配置。ドメインモデルを扱う。
-- **Infrastructure Repository (Implementation)**: `infrastructure.persistence.repository` に配置。
-  - `JpaRepository` を継承したインターフェース（例: `JpaTransactionRepository`）と、ドメインリポジトリを実装するクラス（例: `TransactionRepositoryImpl`）の2段構成とする。
-  - 実装クラスには `@Primary` を付与し、アプリケーション層ではドメインリポジトリのインターフェースを DI して使用する。
+### 4.4. API ドキュメント (OpenAPI / Swagger)
+- **Controller への注釈**: クラスレベルで `@Tag` を付与し、API のグループ化と説明を記述する。
+- **メソッドへの注釈**: すべての公開 API メソッドに `@Operation` を付与し、`summary`（概要）と `description`（詳細）を記述する。
+- **レスポンス定義**: 正常系以外のレスポンス（400 Bad Request 等）や、特定のバリデーションエラーが発生する可能性がある場合は、`responses` 属性を用いて明示的に定義する。
+- **記述の具体性**: `description` には、その API が実行する業務上の制約や、エラーになる条件（例：「期間が重複する予算は登録できない」など）を具体的に記述する。
 
-### 4.4. バリデーションとエラーハンドリング
+### 4.5. バリデーションとエラーハンドリング
 - **入力チェック**: DTOで `jakarta.validation` アノテーションを使用。
 - **業務ルール**: Entity/Value Object のコンストラクタや Domain Service でチェックを行い、不正な場合は `BusinessException` をスローする。
 - **エラーメッセージ**: `messages.properties` で一元管理し、`BusinessException` にメッセージコードを渡す。
@@ -77,7 +77,13 @@
   - Application Service では原則として `try-catch` を使用し、チェック例外や未予期な例外を `BusinessException` にラップして再スローする。
   - Presentation 層の `GlobalExceptionHandler` で `BusinessException` を捕捉し、適切なメッセージとステータスコードに変換してクライアントに返却する。
 
-### 4.5. テスト方針
+### 4.6. リポジトリ構成
+- **Domain Repository (Interface)**: `domain.repository` に配置。ドメインモデルを扱う。
+- **Infrastructure Repository (Implementation)**: `infrastructure.persistence.repository` に配置。
+  - `JpaRepository` を継承したインターフェース（例: `JpaTransactionRepository`）と、ドメインリポジトリを実装するクラス（例: `TransactionRepositoryImpl`）の2段構成とする。
+  - 実装クラスには `@Primary` を付与し、アプリケーション層ではドメインリポジトリのインターフェースを DI して使用する。
+
+### 4.7. テスト方針
 - **ドメインロジック**: 複雑な計算（同期、平準化、予算対比）については、JUnit 5を用いて徹底的にユニットテストを行う。
 - **正常・異常系**: 境界値テストを含め、業務上の制約が守られていることをテストで担保する。
 
